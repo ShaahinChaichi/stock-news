@@ -1,4 +1,5 @@
 import requests
+import unicodedata
 
 STOCK_NAME = "TSLA"
 COMPANY_NAME = "Tesla Inc"
@@ -6,6 +7,12 @@ COMPANY_NAME = "Tesla Inc"
 STOCK_ENDPOINT = "https://www.alphavantage.co/query"
 NEWS_ENDPOINT = "https://newsapi.org/v2/everything"
 ACCESS_KEY = "MO5LQIYP48RPIBR5"
+
+NEWS_API_KEY = "c4bd24d75f7f431ca448b03ab4755bbc"
+NEWS_PARAMS = {
+    "qInTitle": "tesla",
+    "apiKey": NEWS_API_KEY
+}
 
 # https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=IBM&apikey=demo
 
@@ -29,24 +36,25 @@ day_before_yesterday_closing_price = data_list[1]["4. close"]
 difference = abs(float(yesterday_closing_price) - float(day_before_yesterday_closing_price))
 diff_percent = (difference / float(yesterday_closing_price)) * 100
 
-if diff_percent > .5:
-    print("Great News!!!!")
-
-# STEP 2: https://newsapi.org/
-# Instead of printing ("Get News"), actually get the first 3 news pieces for the COMPANY_NAME.
-
-# TODO 6. - Instead of printing ("Get News"), use the News API to get articles related to the COMPANY_NAME.
-
-# TODO 7. - Use Python slice operator to create a list that contains the first 3 articles. Hint: https://stackoverflow.com/questions/509211/understanding-slice-notation
+# Instead of printing ("Get News"), use the News API to get articles related to the COMPANY_NAME.
+# Use Python slice operator to create a list that contains the first 3 articles. Hint:
+# https://stackoverflow.com/questions/509211/understanding-slice-notation
 
 
-## STEP 3: Use twilio.com/docs/sms/quickstart/python
+response = requests.get(url=NEWS_ENDPOINT, params=NEWS_PARAMS)
+articles = response.json()["articles"]
+three_article = articles[:3]
+
+# STEP 3: Use twilio.com/docs/sms/quickstart/python
 # to send a separate message with each article's title and description to your phone number.
 
 # TODO 8. - Create a new list of the first 3 article's headline and description using list comprehension.
+three_article_headline = [article["title"] for article in three_article]
+
 
 # TODO 9. - Send each article as a separate message via Twilio.
-
+for article_headline in three_article_headline:
+    print(article_headline)
 
 # Optional TODO: Format the message like this:
 """
